@@ -1,0 +1,82 @@
+import java.text.SimpleDateFormat
+
+currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
+env.PROJECT = "go-demo-3"
+env.REPO = "https://github.com/ammarqq/go-demo-3.git"
+env.IMAGE = "ammarqqqq/go-demo-3"
+env.DOMAIN = "psamman.com"
+env.ADDRESS = "go-demo-3.psamman.com"
+env.CM_ADDR = "psamman.com"
+env.CHART_VER = "0.0.1"
+def label = "jenkins-slave-${UUID.randomUUID().toString()}"
+
+podTemplate(
+    label: label,
+    namespace: "go-demo-3-build",
+    serviceAccount: "build",
+        containers: [
+        // containerTemplate(name: 'jnlp', image: 'lachlanevenson/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', workingDir: '/home/jenkins', resourceRequestCpu: '200m', resourceLimitCpu: '300m', resourceRequestMemory: '256Mi', resourceLimitMemory: '512Mi'),    
+        containerTemplate(name: 'docker', image: 'docker:18.09', ttyEnabled: true, command: 'cat'),
+        // containerTemplate(name: 'maven', image: 'maven:alpine', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.11.0', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'kubectl', image: 'vfarcic/kubectl', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'golang', image: 'golang:1.9', command: 'cat', ttyEnabled: true)   
+        ],
+volumes:[
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+]) {
+  node(label) {
+         stage('Checkout') {
+                checkout scm
+        }
+    container("docker") {
+      stage("build") {
+      k8sBuildImageBeta(env.IMAGE)
+      }
+    }
+    stage("func-test") {
+      try {
+        container("helm") {
+          k8sUpgradeBeta(env.PROJECT, env.DOMAIN)
+        }
+        container("kubectl") {
+          k8sRolloutBeta(env.PROJECT)
+        }
+        container("golang") {
+          k8sFuncTestGolang(env.PROJECT, env.DOMAIN)
+        }
+      } catch(e) {
+          error "Failed functional tests"
+      } finally {
+        container("helm") {
+          k8sDeleteBeta(env.PROJECT)
+        }
+      }
+    }
+    stage("release") {
+      container("docker") {
+        k8sPushImage(env.IMAGE)
+      }
+      // container("helm") {
+      //   k8sPushHelm(env.PROJECT, env.CHART_VER, env.CM_ADDR)
+      // }
+    }
+    stage("deploy") {
+      try {
+        container("helm") {
+          k8sUpgrade(env.PROJECT, env.ADDRESS)
+        }
+        container("kubectl") {
+          k8sRollout(env.PROJECT)
+        }
+        container("golang") {
+          k8sProdTestGolang(env.ADDRESS)
+        }
+      } catch(e) {
+        container("helm") {
+          k8sRollback(env.PROJECT)
+        }
+      }
+    }
+  }
+}

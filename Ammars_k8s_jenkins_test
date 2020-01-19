@@ -1,0 +1,116 @@
+import java.text.SimpleDateFormat
+currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
+env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.psamman.com"
+env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
+env.REPO = "https://github.com/ammarqq/go-demo-3.git"
+env.IMAGE = "ammarqqqq/go-demo-3"
+env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
+def label = "worker-${UUID.randomUUID().toString()}"
+podTemplate(
+    label: label,
+    namespace: "go-demo-3-build",
+    serviceAccount: "build",
+        containers: [
+        // containerTemplate(name: 'jnlp', image: 'lachlanevenson/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', workingDir: '/home/jenkins', resourceRequestCpu: '200m', resourceLimitCpu: '300m', resourceRequestMemory: '256Mi', resourceLimitMemory: '512Mi'),    
+        containerTemplate(name: 'docker', image: 'docker:18.09', ttyEnabled: true, command: 'cat'),
+        // containerTemplate(name: 'maven', image: 'maven:alpine', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.11.0', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'kubectl', image: 'vfarcic/kubectl', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'golang', image: 'golang:1.9', command: 'cat', ttyEnabled: true)   
+        ],
+
+// podTemplate(
+//     label: label,            // container('maven') {
+            // stage('git repo') {
+            //     git "${env.REPO}"
+            // }
+            //                }
+//     namespace: "go-demo-3-build",
+//     serviceAccount: "build",
+//     yaml: """
+// apiVersion: v1
+// kind: Pod
+// spec:
+//   containers:
+//   - name: maven
+//     image: maven:alpine
+//     command: ["cat"]
+//     tty: true
+//   - name: docker
+//     image: docker
+//     command: ["cat"]
+//     tty: true
+// """ ,
+volumes:[
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+]){
+      node(label) {
+        
+        stage('Checkout') {
+                checkout scm
+        }
+
+            // container('maven') {
+            // stage('git repo') {
+            //     git "${env.REPO}"
+            // }
+            //                }
+        stage('package') {
+        container('docker') {
+            
+             sh """docker image build \
+      -t ${env.IMAGE}:${env.TAG_BETA} ."""
+    withCredentials([usernamePassword(credentialsId: "dockerhub",
+      usernameVariable: "USERNAME",
+      passwordVariable: "PASSWORD"
+    )]) {
+      sh """ docker login \
+        -u $USERNAME -p $PASSWORD"""
+    }
+    sh """docker image push \
+      ${env.IMAGE}:${env.TAG_BETA}"""
+            }
+        }
+            stage("func-test") {
+            try {
+             stage("helm") {
+             container("helm") {
+            
+             sh """helm upgrade --install --wait --force --timeout 600 \
+            --tiller-namespace go-demo-3-build \
+            --set image.tag=${env.TAG_BETA} \
+            --set ingress.host=${env.ADDRESS} \
+            ${env.CHART_NAME} \
+            helm/go-demo-3"""
+             }
+        }
+        stage("kubectl"){
+        container("kubectl") {
+          sh """kubectl -n go-demo-3-build \
+            rollout status deployment \
+            ${env.CHART_NAME}"""
+        }
+        }
+        stage("golang"){
+        container("golang") { // Uses env ADDRESS
+          sh "go get -d -v -t"
+          sh """go test ./... -v \
+            --run FunctionalTest"""
+        }
+        }               
+        } catch(e) {
+          error "Failed functional tests"
+      } finally {
+         container("helm") {
+          sh """helm delete \
+            ${env.CHART_NAME} \
+            --tiller-namespace go-demo-3-build \
+            --purge"""
+        }
+       
+        } 
+      }
+
+
+}
+}

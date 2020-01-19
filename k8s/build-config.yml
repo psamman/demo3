@@ -1,0 +1,15 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  creationTimestamp: 2016-02-18T19:14:38Z
+  name: build-config
+  namespace: go-demo-3-build
+data:
+  build-config.properties: |
+    project=go-demo-3
+    image=ammarqqqq/go-demo-3
+    domain=psamman.com
+    addr=go-demo-3.psamman.com
+    cmAddr=cm.psamman.com
+    chartVer=0.0.1
+

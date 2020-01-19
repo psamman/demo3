@@ -1,0 +1,9 @@
+k -n kube-jenkins cp kube-jenkins-756484c85d-wrwsw:var/jenkin
+s_home/credentials.xml \
+cluster/jenkins
+
+k -n kube-jenkins cp kube-jenkins-756484c85d-wrwsw:var/jenkins_home/secrets/hudson.util.Secret \
+cluster/jenkins/secrets
+
+k -n kube-jenkins cp kube-jenkins-756484c85d-wrwsw:var/jenkins_home/secrets/master.key \
+cluster/jenkins/secrets
