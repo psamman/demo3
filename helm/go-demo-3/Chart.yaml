@@ -8,9 +8,9 @@ keywords:
 - go
 - database
 - mongodb
-home: http://www.devopstoolkitseries.com/
+home: https://psamman.com
 sources:
-- https://github.com/vfarcic/go-demo-3
+- https://github.com/psamman/go-demo-3
 maintainers:
-- name: Viktor Farcic
-  email: viktor@farcic.com
+- name: Vi
+  email: vi@vi.vi

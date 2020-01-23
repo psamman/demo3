@@ -5,7 +5,7 @@ image:
   dbTag: 3.3
 ingress:
   enabled: true
-  host: psamman.com
+  host: app.psamman.com
 service:
   # Change to NodePort if ingress.enable=false
   type: ClusterIP
@@ -25,6 +25,9 @@ dbResources:
   requests:
     memory: "100Mi"
     cpu: 0.1
+
+secret:
+  secretName: psamman-com-nginx-ingress
 dbPersistence:
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
