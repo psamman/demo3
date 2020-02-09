@@ -90,7 +90,7 @@ volumes:[
       usernameVariable: "USERNAME",
       passwordVariable: "PASSWORD"
  )]) {
- sh "az login --service-principal -u $USERNAME -p $PASSWORD --tenant ${TENANTID}" \
+ sh "az login --service-principal -u $USERNAME -p $PASSWORD --tenant ${TENANTID}"
  sh "az acr helm push helm/go-demo-3-.tgz"
  }
  }
