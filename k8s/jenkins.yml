@@ -12,4 +12,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: jenkins
-  namespace: kube-jenkins
+  namespace: jenkins
