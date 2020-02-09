@@ -76,8 +76,8 @@ volumes:[
 31 sh "helm package helm/go-demo-3"
 32 withCredentials([usernamePassword(
 33 credentialsId: "azurelogin",
-34 usernameVariable: "USER",
-35 passwordVariable: "PASS"
+34 usernameVariable: "USERNAME",
+35 passwordVariable: "PASSWORD"
 36 )]) {
 37 sh "az login --service-principal -u $USER -p $PASS --tenant $TENANTID" \
 38 sh "az helm package '@go-demo-3-${CHART_VER}.tgz'"
