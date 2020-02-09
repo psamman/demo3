@@ -69,6 +69,7 @@ volumes:[
       sh """ docker login \
         -u $USERNAME -p $PASSWORD"""
     }
+    sh "helm init --client-only"
     sh """docker image push \
       ${env.IMAGE}:${env.TAG_BETA}"""
             }
