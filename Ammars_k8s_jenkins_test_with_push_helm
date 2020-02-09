@@ -76,7 +76,7 @@ volumes:[
  sh "helm package helm/go-demo-3"
              }
       container("azurecli") {   
- withCredentials([usernamePassword(credentialsId: "dockerhub",
+ withCredentials([usernamePassword(credentialsId: "azurelogin",
       usernameVariable: "USERNAME",
       passwordVariable: "PASSWORD"
  )]) {
