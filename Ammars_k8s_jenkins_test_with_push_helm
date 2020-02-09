@@ -6,7 +6,7 @@ env.REPO = "https://github.com/psamman/demo3.git"
 env.IMAGE = "ammarqqqq/go-demo-3"
 env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
 env.CHART_VER = "0.0.1"
-TENANTID = "72f988bf-86f1-41af-91ab-2d7cd011db47"
+env.TENANTID = "72f988bf-86f1-41af-91ab-2d7cd011db47"
 def label = "worker-${UUID.randomUUID().toString()}"
 podTemplate(
     label: label,
@@ -91,7 +91,7 @@ volumes:[
       passwordVariable: "PASSWORD"
  )]) {
  sh "az login --service-principal -u $USERNAME -p $PASSWORD --tenant ${TENANTID}"
- sh "az acr helm push helm/go-demo-3-.tgz"
+ sh "az acr helm push helm/go-demo-3-${CHART_VER}.tgz"
  }
  }
         }
