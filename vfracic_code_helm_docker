@@ -7,33 +7,47 @@ env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.acme.com"
 env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
 env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
 def label = "jenkins-slave-${UUID.randomUUID().toString()}"
-
 podTemplate(
-  label: label,
-  namespace: "go-demo-3-build",
-  serviceAccount: "build",
-  yaml: """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: helm
-    image: vfarcic/helm:2.9.1
-    command: ["cat"]
-    tty: true
-  - name: kubectl
-    image: vfarcic/kubectl
-    command: ["cat"]
-    tty: true
-  - name: oc
-    image: vfarcic/openshift-client
-    command: ["cat"]
-    tty: true
-  - name: golang
-    image: golang:1.9
-    command: ["cat"]
-    tty: true
-"""
+    label: label,
+    namespace: "go-demo-3-build",
+    serviceAccount: "build",
+        containers: [
+        // containerTemplate(name: 'jnlp', image: 'lachlanevenson/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', workingDir: '/home/jenkins', resourceRequestCpu: '200m', resourceLimitCpu: '300m', resourceRequestMemory: '256Mi', resourceLimitMemory: '512Mi'),    
+        containerTemplate(name: 'docker', image: 'docker:18.09', ttyEnabled: true, command: 'cat'),
+        // containerTemplate(name: 'maven', image: 'maven:alpine', command: 'cat', ttyEnabled: true),
+        // containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.11.0', command: 'cat', ttyEnabled: true),
+        // containerTemplate(name: 'kubectl', image: 'vfarcic/kubectl', command: 'cat', ttyEnabled: true),
+        // containerTemplate(name: 'golang', image: 'golang:1.9', command: 'cat', ttyEnabled: true)   
+        ],
+volumes:[
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+]){
+// podTemplate(
+//   label: label,
+//   namespace: "go-demo-3-build",
+//   serviceAccount: "build",
+//   yaml: """
+// apiVersion: v1
+// kind: Pod
+// spec:
+//   containers:
+//   - name: helm
+//     image: vfarcic/helm:2.9.1
+//     command: ["cat"]
+//     tty: true
+//   - name: kubectl
+//     image: vfarcic/kubectl
+//     command: ["cat"]
+//     tty: true
+//   - name: oc
+//     image: vfarcic/openshift-client
+//     command: ["cat"]
+//     tty: true
+//   - name: golang
+//     image: golang:1.9
+//     command: ["cat"]
+//     tty: true
+// """
 ) {
   node(label) {
     node("docker") {
