@@ -1,0 +1,47 @@
+import java.text.SimpleDateFormat	
+	currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
+	env.REPO = "https://github.com/psamman/demo3.git"
+	env.IMAGE = "ammarqqqq/go-demo-3"
+	env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
+podTemplate(
+    label: "label",
+    namespace: "go-demo-3-build",
+    serviceAccount: "build",
+    yaml: """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:18.06
+    command: ["cat"]
+    tty: true
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: docker-socket
+       """
+) {
+  node("label") {
+
+     stage('Checkout') {
+                checkout scm
+        }
+    container("docker") {
+      stage("build") {
+    //    git "${env.REPO}"
+        sh """docker image build \
+          -t ${env.IMAGE}:${env.TAG_BETA} ."""
+        withCredentials([usernamePassword(
+          credentialsId: "dockerhub",
+          usernameVariable: "USER",
+          passwordVariable: "PASS"
+        )]) {
+          sh """docker login \
+            -u $USER -p $PASS"""
+        }
+        sh """docker image push \
+          ${env.IMAGE}:${env.TAG_BETA}"""
+      }
+    }
+  }
+}
