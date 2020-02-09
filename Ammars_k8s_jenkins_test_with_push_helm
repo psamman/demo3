@@ -75,7 +75,7 @@ volumes:[
              container("helm") {
               sh "mkdir -p /home/jenkins/.helm/repository/local"
               sh "mkdir -p /root/.helm/repository/local"
-              sh """ cat <<EOF > /home/jenkins/.helm/repository/local/index.yaml 
+              sh """ cat <<EOF > /root/.helm/repository/local/index.yaml 
                   apiVersion: v1 
                   entries: {} 
                   generated: 2016-12-19T11:33:32.034887011-06:00 
