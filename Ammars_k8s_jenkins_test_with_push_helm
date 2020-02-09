@@ -72,18 +72,18 @@ volumes:[
     sh """docker image push \
       ${env.IMAGE}:${env.TAG_BETA}"""
             }
-            30 container("azurecli") {
-31 sh "helm package helm/go-demo-3"
-32 withCredentials([usernamePassword(
-33 credentialsId: "azurelogin",
-34 usernameVariable: "USERNAME",
-35 passwordVariable: "PASSWORD"
-36 )]) {
-37 sh "az login --service-principal -u $USER -p $PASS --tenant $TENANTID" \
-38 sh "az helm package '@go-demo-3-${CHART_VER}.tgz'"
-39 sh "az acr helm push '@go-demo-3-${CHART_VER}.tgz'"
-40 }
-41 }
+             container("helm") {
+ sh "helm package helm/go-demo-3"
+             }
+      container("azurecli") {   
+ withCredentials([usernamePassword(credentialsId: "dockerhub",
+      usernameVariable: "USERNAME",
+      passwordVariable: "PASSWORD"
+ )]) {
+ sh "az login --service-principal -u $USER -p $PASS --tenant $TENANTID" \
+ sh "az acr helm push helm/go-demo-3-.tgz'"
+ }
+ }
         }
             stage("func-test") {
             try {
