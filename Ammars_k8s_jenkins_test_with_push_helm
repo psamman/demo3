@@ -69,7 +69,12 @@ volumes:[
       sh """ docker login \
         -u $USERNAME -p $PASSWORD"""
     }
-    sh "helm init --client-only"
+    sh "mkdir -p /home/jenkins/.helm/repository/local"
+sh "cat <<EOF > /home/jenkins/.helm/repository/local/index.yaml
+apiVersion: v1
+entries: {}
+generated: 2016-12-19T11:33:32.034887011-06:00
+EOF"
     sh """docker image push \
       ${env.IMAGE}:${env.TAG_BETA}"""
             }
