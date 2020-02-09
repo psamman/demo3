@@ -12,8 +12,8 @@ podTemplate(
     namespace: "go-demo-3-build",
     serviceAccount: "build",
         containers: [
-        // containerTemplate(name: 'jnlp', image: 'lachlanevenson/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', workingDir: '/home/jenkins', resourceRequestCpu: '200m', resourceLimitCpu: '300m', resourceRequestMemory: '256Mi', resourceLimitMemory: '512Mi'),    
-        containerTemplate(name: 'docker', image: 'docker:18.09', ttyEnabled: true, command: 'cat'),
+         containerTemplate(name: 'jnlp', image: 'lachlanevenson/jnlp-slave:3.10-1-alpine', args: '${computer.jnlpmac} ${computer.name}', workingDir: '/home/jenkins', resourceRequestCpu: '200m', resourceLimitCpu: '300m', resourceRequestMemory: '256Mi', resourceLimitMemory: '512Mi'),    
+        containerTemplate(name: 'docker', image: 'docker:18.09', ttyEnabled: true, command: 'cat')
         // containerTemplate(name: 'maven', image: 'maven:alpine', command: 'cat', ttyEnabled: true),
         // containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.11.0', command: 'cat', ttyEnabled: true),
         // containerTemplate(name: 'kubectl', image: 'vfarcic/kubectl', command: 'cat', ttyEnabled: true),
