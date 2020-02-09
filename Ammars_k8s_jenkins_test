@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
 env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.psamman.com"
 env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
-env.REPO = "https://github.com/ammarqq/go-demo-3.git"
+env.REPO = "https://github.com/psamman/demo3.git"
 env.IMAGE = "ammarqqqq/go-demo-3"
 env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
 def label = "worker-${UUID.randomUUID().toString()}"
