@@ -84,11 +84,14 @@ volumes:[
             --set replicaCount=2 \
             --set dbReplicaCount=1"""
         }
+        stage("kubectl"){
         container("kubectl") {
           sh """kubectl -n go-demo-3-build \
             rollout status deployment \
             ${env.CHART_NAME}"""
         }
+        }
+        stage("golang"){
         container("golang") { // Uses env ADDRESS
           sh "go get -d -v -t"
           sh """go test ./... -v \
@@ -110,4 +113,4 @@ volumes:[
 
 
 }
-
+}
