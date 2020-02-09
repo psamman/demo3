@@ -59,7 +59,7 @@ volumes:[
         container('docker') {
             
              sh """docker image build \
-      -t ${env.IMAGE}:${env.TAG_BETA} ."""
+      -t ${env.IMAGE}:${env.TAG_BETA} -f Dockerfile.old"""
     withCredentials([usernamePassword(credentialsId: "dockerhub",
       usernameVariable: "USERNAME",
       passwordVariable: "PASSWORD"
