@@ -16,7 +16,7 @@ podTemplate(
         // containerTemplate(name: 'maven', image: 'maven:alpine', command: 'cat', ttyEnabled: true),
         containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:v2.11.0', command: 'cat', ttyEnabled: true),
         containerTemplate(name: 'kubectl', image: 'vfarcic/kubectl', command: 'cat', ttyEnabled: true),
-        containerTemplate(name: 'golang', image: 'golang:1.9', command: 'cat', ttyEnabled: true)   
+        containerTemplate(name: 'golang', image: 'golang:1.13', command: 'cat', ttyEnabled: true)   
         ],
 
 // podTemplate(
