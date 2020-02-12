@@ -1,4 +1,5 @@
 import java.text.SimpleDateFormat
+
 currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
 env.REPO = "https://github.com/ammarqq/go-demo-3.git"
 env.IMAGE = "ammarqqqq/go-demo-3"

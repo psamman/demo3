@@ -1,4 +1,5 @@
 import java.text.SimpleDateFormat
+// def props
 currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
 env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.psamman.com"
 env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
@@ -6,7 +7,7 @@ env.REPO = "https://github.com/psamman/demo3.git"
 env.IMAGE = "ammarqqqq/go-demo-3"
 env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
 env.TAG = "${currentBuild.displayName}"
-env.CHART_VER = "0.0.1"
+env.CHART_VER = "0.0.2"
 env.PROD_ADDRESS = "go-demo-3.psamman.com"
 env.TENANTID = "72f988bf-86f1-41af-91ab-2d7cd011db47"
 def label = "worker-${UUID.randomUUID().toString()}"
@@ -138,7 +139,7 @@ volumes:[
        
         } 
       }
-
+if ("${BRANCH_NAME}" == "master") {
 stage("release") {
       container("docker") {
         sh """docker pull \
@@ -206,5 +207,6 @@ stage("release") {
         }
       }
     }
+}
 }
 }
