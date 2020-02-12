@@ -96,7 +96,7 @@ volumes:[
  sh "az login --service-principal -u $USERNAME -p $PASSWORD --tenant ${TENANTID}"
  sh "az configure --defaults acr=acramm2"
 //  sh "az acr helm repo add"
-// sh "az acr helm delete go-demo-3 --yes"
+ sh "az acr helm delete go-demo-3 --yes"
  sh "az acr helm push $WORKSPACE/go-demo-3-${CHART_VER}.tgz"
  }
  }
